@@ -11,6 +11,9 @@ const { detectArbitrage } = require('../logic/arbitrage');
 const trades = [];
 let totalPnL = 0;
 
+// In-memory custom markets
+const customMarkets = [];
+
 // GET /api/markets/live
 router.get('/markets/live', async (req, res) => {
     try {
@@ -21,7 +24,7 @@ router.get('/markets/live', async (req, res) => {
             fetchProbableMarkets(),
             fetchXOMarkets()
         ]);
-        const markets = [...manifold, ...predictfun, ...opinion, ...probable, ...xo];
+        const markets = [...manifold, ...predictfun, ...opinion, ...probable, ...xo, ...customMarkets];
         res.json({ source: 'live', count: markets.length, markets });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -38,7 +41,7 @@ router.get('/markets/all', async (req, res) => {
             fetchProbableMarkets(),
             fetchXOMarkets(),
         ]);
-        const all = [...manifold, ...predictfun, ...opinion, ...probable, ...xo];
+        const all = [...manifold, ...predictfun, ...opinion, ...probable, ...xo, ...customMarkets];
         res.json({ count: all.length, markets: all });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -55,7 +58,7 @@ router.get('/arb', async (req, res) => {
             fetchProbableMarkets(),
             fetchXOMarkets(),
         ]);
-        const allMarkets = [...manifold, ...predictfun, ...opinion, ...probable, ...xo];
+        const allMarkets = [...manifold, ...predictfun, ...opinion, ...probable, ...xo, ...customMarkets];
         const opportunities = detectArbitrage(allMarkets);
         res.json({
             scannedMarkets: allMarkets.length,
@@ -102,6 +105,32 @@ router.get('/portfolio', (req, res) => {
         tradeCount: trades.length,
         trades: trades.slice().reverse(),
     });
+});
+
+// POST /api/markets/custom — manually add a market
+router.post('/markets/custom', (req, res) => {
+    const { question, probability = 50, volume = 0, url = '' } = req.body;
+
+    if (!question) {
+        return res.status(400).json({ error: 'question is required' });
+    }
+
+    const yesPrice = Math.round((probability / 100) * 1000) / 1000;
+    const noPrice = Math.round((1 - yesPrice) * 1000) / 1000;
+
+    const newMarket = {
+        id: `custom-${Date.now()}`,
+        source: 'Custom',
+        question,
+        yesPrice,
+        noPrice,
+        probability: Number(probability),
+        volume: Number(volume),
+        url,
+    };
+
+    customMarkets.push(newMarket);
+    res.json({ success: true, market: newMarket });
 });
 
 module.exports = router;

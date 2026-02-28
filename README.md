@@ -1,8 +1,22 @@
 # BNB Terminal — Prediction Market Arbitrage Agent
 
-A unified prediction market trading terminal with an AI-powered arbitrage detection agent. Aggregates data from **Manifold Markets** (live) and **5 simulated platforms** to detect mispricings and execute paper trades.
+A unified prediction market trading terminal with an AI-powered arbitrage detection agent. Aggregates data from multiple live prediction markets to detect mispricings and execute paper trades.
 
-![Stack](https://img.shields.io/badge/React-18-blue) ![Stack](https://img.shields.io/badge/Express-4-green) ![Stack](https://img.shields.io/badge/Vite-5-purple)
+![Stack](https://img.shields.io/badge/React-18-blue) ![Stack](https://img.shields.io/badge/Express-4-green) ![Stack](https://img.shields.io/badge/Node.js-20-lightgreen) ![Stack](https://img.shields.io/badge/Vite-5-purple)
+
+## 🛠 Tech Stack
+
+**Frontend**
+- **Framework**: React 18 with Vite
+- **Styling**: Vanilla CSS (CSS Grid for rigid multi-panel layout, CSS variables for theming)
+- **Data Visualization**: Recharts (for Portfolio P&L curves)
+- **State Management**: React Hooks (`useState`, `useEffect`, custom `useApi` hook)
+
+**Backend**
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Architecture**: Custom API Gateway pattern consolidating multiple prediction market endpoints into a normalized unified schema.
+- **Arbitrage Engine**: Custom cross-exchange keyword/event matching and price comparison logic.
 
 ## ⚡ Quick Start
 
@@ -89,11 +103,10 @@ PORT=3001 node server/index.js
 | Platform | Type | Status |
 |----------|------|--------|
 | Manifold Markets | Live API | ✅ Active |
-| Opinion | Mock JSON | 📦 Simulated |
-| Predict.fun | Mock JSON | 📦 Simulated |
-| Probable | Mock JSON | 📦 Simulated |
-| XO | Mock JSON | 📦 Simulated |
-| Bento | Mock JSON | 📦 Simulated |
+| Predict.fun | Live API (Mainnet) | ✅ Active |
+| Probable | Live API | ✅ Active |
+| Opinion | Live API | ✅ Active |
+| XO | Mock JSON | 📦 Simulated placeholder |
 
 ---
 
