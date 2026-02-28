@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function LeftPanel({ opportunities, onTrade }) {
+export default function LeftPanel({ opportunities, onTrade, sendBNB }) {
     const opps = opportunities || [];
+    const [loadingId, setLoadingId] = useState(null);
+
+    const handleExecute = async (opp) => {
+        setLoadingId(opp.id);
+        try {
+            // Send 0.001 tBNB to burn address to simulate executing the on-chain trade
+            const receipt = await sendBNB('0x000000000000000000000000000000000000dead', '0.001');
+            if (receipt) {
+                onTrade({
+                    id: Date.now(),
+                    opportunityId: opp.id,
+                    action: `Arbitrage Executed (Tx: ${receipt.hash.slice(0, 8)}...)`,
+                    pnl: opp.edgePercent,
+                    timestamp: new Date(),
+                    totalPnL: opp.edgePercent
+                });
+            }
+        } finally {
+            setLoadingId(null);
+        }
+    };
 
     return (
         <div className="panel left-panel">
@@ -11,7 +32,7 @@ export default function LeftPanel({ opportunities, onTrade }) {
             </div>
             <div className="panel-content" style={{ padding: '16px' }}>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '16px' }}>
-                    Simulated Arbitrage Execution
+                    Web3 Arbitrage Execution (Requires tBNB)
                 </div>
 
                 {/* Arb List */}
@@ -26,9 +47,22 @@ export default function LeftPanel({ opportunities, onTrade }) {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span className={opp.edgePercent > 5 ? 'text-buy' : 'text-primary'} style={{ fontSize: '13px', fontWeight: 'bold' }}>Edge: {opp.edgePercent}%</span>
                                 <button
-                                    onClick={() => onTrade({ id: Date.now(), opportunityId: opp.id, action: 'ARB_EXECUTE', pnl: opp.edgePercent, timestamp: new Date(), totalPnL: opp.edgePercent })}
-                                    style={{ background: 'var(--text-primary)', color: 'var(--bg-main)', border: 'none', padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', transition: 'transform 0.1s' }}
-                                >Execute</button>
+                                    onClick={() => handleExecute(opp)}
+                                    disabled={loadingId === opp.id}
+                                    style={{
+                                        background: loadingId === opp.id ? 'var(--text-muted)' : 'var(--text-primary)',
+                                        color: 'var(--bg-main)',
+                                        border: 'none',
+                                        padding: '6px 16px',
+                                        borderRadius: '4px',
+                                        cursor: loadingId === opp.id ? 'wait' : 'pointer',
+                                        fontSize: '12px',
+                                        fontWeight: 'bold',
+                                        transition: 'transform 0.1s'
+                                    }}
+                                >
+                                    {loadingId === opp.id ? 'Confirming in Wallet...' : 'Execute'}
+                                </button>
                             </div>
                         </div>
                     )) : (

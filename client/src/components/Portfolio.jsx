@@ -1,6 +1,7 @@
+import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
-export default function Portfolio({ trades, totalPnL }) {
+export default function Portfolio({ trades, totalPnL, account, balance, sendBNB }) {
     // Build chart data from cumulative P&L
     const chartData = trades
         .slice()
@@ -129,6 +130,93 @@ export default function Portfolio({ trades, totalPnL }) {
                     )}
                 </div>
             </div>
+
+            {/* tBNB Transfer Widget */}
+            <div className="card">
+                <div className="card-header">
+                    <div className="card-title">💸 Transfer tBNB</div>
+                </div>
+                <div className="card-body">
+                    <div style={{ marginBottom: '16px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                        Send Testnet BNB from your connected Web3 wallet to another address.
+                    </div>
+
+                    <div style={{ marginBottom: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                        Connected Account: <span style={{ fontFamily: 'var(--font-mono)' }}>{account}</span>
+                    </div>
+                    <div style={{ marginBottom: '24px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                        Available Balance: <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--neon-green)' }}>{balance} tBNB</span>
+                    </div>
+
+                    <TransferForm sendBNB={sendBNB} />
+                </div>
+            </div>
         </div>
+    );
+}
+
+function TransferForm({ sendBNB }) {
+    const [recipient, setRecipient] = useState('');
+    const [amount, setAmount] = useState('');
+    const [status, setStatus] = useState('');
+    const [isSending, setIsSending] = useState(false);
+
+    const handleTransfer = async (e) => {
+        e.preventDefault();
+        if (!recipient || !amount) return;
+
+        setIsSending(true);
+        setStatus('Confirming in Wallet...');
+
+        try {
+            const receipt = await sendBNB(recipient, amount);
+            if (receipt) {
+                setStatus(`Success! TxHash: ${receipt.hash}`);
+                setRecipient('');
+                setAmount('');
+            } else {
+                setStatus('Transfer failed.');
+            }
+        } catch (err) {
+            setStatus('Error processing transfer.');
+        } finally {
+            setIsSending(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleTransfer} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <input
+                type="text"
+                placeholder="Recipient Address (0x...)"
+                value={recipient}
+                onChange={e => setRecipient(e.target.value)}
+                style={{ background: 'var(--bg-main)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '12px', borderRadius: '4px', fontFamily: 'var(--font-mono)' }}
+                required
+            />
+            <div style={{ display: 'flex', gap: '12px' }}>
+                <input
+                    type="number"
+                    step="0.0001"
+                    placeholder="Amount (tBNB)"
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    style={{ flex: 1, background: 'var(--bg-main)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '12px', borderRadius: '4px', fontFamily: 'var(--font-mono)' }}
+                    required
+                />
+                <button
+                    type="submit"
+                    disabled={isSending}
+                    style={{ background: isSending ? 'var(--text-muted)' : 'var(--neon-cyan)', color: 'black', border: 'none', padding: '0 24px', borderRadius: '4px', fontWeight: 'bold', cursor: isSending ? 'wait' : 'pointer' }}
+                >
+                    {isSending ? 'Sending...' : 'Send'}
+                </button>
+            </div>
+            {status && (
+                <div style={{ marginTop: '8px', fontSize: '13px', background: 'var(--bg-main)', padding: '12px', borderRadius: '4px', fontFamily: 'var(--font-mono)', wordBreak: 'break-all', color: status.includes('Success') ? 'var(--neon-green)' : 'var(--text-primary)' }}>
+                    {status}
+                </div>
+            )}
+        </form>
     );
 }
