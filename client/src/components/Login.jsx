@@ -4,7 +4,7 @@ export default function Login({ connectWallet, isConnecting, error }) {
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--bg-main)' }}>
             <div className="panel" style={{ padding: '40px', maxWidth: '400px', width: '100%', textAlign: 'center', background: 'var(--bg-elevated)', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
-                <h1 style={{ color: 'var(--text-primary)', marginBottom: '8px', fontSize: '28px' }}>BNB <span style={{ color: 'var(--neon-green)' }}>PRO</span></h1>
+                <h1 style={{ color: 'var(--text-primary)', marginBottom: '8px', fontSize: '28px' }}>PRE <span style={{ color: 'var(--neon-green)' }}>dagg</span></h1>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '14px', lineHeight: '1.5' }}>Connect your Web3 wallet to access the AI Arbitrage Terminal on BNB Smart Chain Testnet.</p>
 
                 {error && (

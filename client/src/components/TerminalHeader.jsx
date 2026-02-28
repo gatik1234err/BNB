@@ -4,7 +4,7 @@ export default function TerminalHeader({ activeTab, setActiveTab }) {
     return (
         <div className="panel top-nav">
             <div className="top-nav-left">
-                <div className="nav-logo">BNB <span>PRO</span></div>
+                <div className="nav-logo">Predagg</div>
                 <span className={`nav-link ${activeTab === 'Trade' ? 'active' : ''}`} onClick={() => setActiveTab('Trade')}>Trade</span>
                 <span className={`nav-link ${activeTab === 'Portfolio' ? 'active' : ''}`} onClick={() => setActiveTab('Portfolio')}>Portfolio</span>
                 <span className={`nav-link ${activeTab === 'History' ? 'active' : ''}`} onClick={() => setActiveTab('History')}>History</span>
