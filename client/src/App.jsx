@@ -4,11 +4,12 @@ import TerminalHeader from './components/TerminalHeader';
 import AssetBar from './components/AssetBar';
 import LeftPanel from './components/LeftPanel';
 import OrderBookPanel from './components/OrderBookPanel';
-import MarketTradesPanel from './components/MarketTradesPanel';
 import ChartArea from './components/ChartArea';
 import BottomPanel from './components/BottomPanel';
 import Portfolio from './components/Portfolio';
 import Login from './components/Login';
+import CustomMarket from './components/CustomMarket';
+import CustomMarketBetting from './components/CustomMarketBetting';
 import { useBNBTestnet } from './hooks/useBNBTestnet';
 
 export default function App() {
@@ -44,7 +45,6 @@ export default function App() {
                         sendBNB={sendBNB}
                     />
                     <OrderBookPanel markets={marketsApi.data?.markets} />
-                    <MarketTradesPanel markets={marketsApi.data?.markets} />
                     <ChartArea />
                     <BottomPanel trades={trades} />
                 </div>
@@ -63,6 +63,28 @@ export default function App() {
                             account={account}
                             balance={balance}
                         />
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'Custom Market' && (
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--bg-main)' }}>
+                    <div style={{ height: '56px', minHeight: '56px', borderBottom: '1px solid var(--border-color)' }}>
+                        <TerminalHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+                    </div>
+                    <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+                        <CustomMarket />
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'Bet Custom' && (
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--bg-main)' }}>
+                    <div style={{ height: '56px', minHeight: '56px', borderBottom: '1px solid var(--border-color)' }}>
+                        <TerminalHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+                    </div>
+                    <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+                        <CustomMarketBetting sendBNB={sendBNB} />
                     </div>
                 </div>
             )}

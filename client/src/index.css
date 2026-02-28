@@ -34,12 +34,12 @@ body {
   display: grid;
   height: 100vh;
   grid-template-rows: 56px 56px 1fr 300px;
-  grid-template-columns: 280px 300px 300px 1fr;
+  grid-template-columns: 280px auto 1fr;
   grid-template-areas:
-    "top top top top"
-    "asset asset asset asset"
-    "left book trades chart"
-    "left bottom bottom bottom";
+    "top top top"
+    "asset asset asset"
+    "left book chart"
+    "left bottom bottom";
   gap: 1px;
   background-color: var(--border-color);
   /* Acts as border between panels */
@@ -193,10 +193,18 @@ body {
 
 .order-book {
   grid-area: book;
+  width: 450px;
+  min-width: 300px;
+  max-width: 800px;
+  resize: horizontal;
 }
 
 .market-trades {
   grid-area: trades;
+  width: 300px;
+  min-width: 200px;
+  max-width: 800px;
+  resize: horizontal;
 }
 
 .chart-area {
