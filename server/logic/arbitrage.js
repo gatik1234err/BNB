@@ -10,14 +10,15 @@ const THRESHOLD = 0.05; // 5% minimum edge to flag
 // Hardcoded event mapping: eventId → array of { source, idPattern }
 // idPattern is a substring match against market id fields
 const EVENT_MAP = {
-    'evt-ai-turing': { question: 'Will AI pass the Turing test by 2030?', keywords: ['ai', 'turing'] },
-    'evt-btc-100k': { question: 'Will Bitcoin reach $100k by end of 2026?', keywords: ['bitcoin', '100k'] },
-    'evt-spacex-mars': { question: 'Will SpaceX land humans on Mars by 2030?', keywords: ['spacex', 'mars'] },
-    'evt-us-recession': { question: 'Will the US enter a recession in 2026?', keywords: ['recession', '2026'] },
-    'evt-gpt5-2026': { question: 'Will GPT-5 be released in 2026?', keywords: ['gpt-5', 'gpt5', 'released'] },
-    'evt-dem-2028': { question: 'Will Democrats win the 2028 presidential election?', keywords: ['democrat', '2028', 'presidential'] },
-    'evt-tsla-500': { question: 'Will Tesla stock reach $500 by end of 2026?', keywords: ['tesla', '500'] },
-    'evt-ukraine-ceasefire': { question: 'Will there be a ceasefire in Ukraine by end of 2026?', keywords: ['ukraine', 'ceasefire'] },
+    'evt-ai-turing': { question: 'Will AI pass the Turing test by 2030?', keywords: ['ai', 'turing', 'test'] },
+    'evt-btc-100k': { question: 'Will Bitcoin reach $100k by end of 2026?', keywords: ['bitcoin', 'btc', '100k', 'price'] },
+    'evt-spacex-mars': { question: 'Will SpaceX land humans on Mars by 2030?', keywords: ['spacex', 'mars', 'land'] },
+    'evt-us-recession': { question: 'Will the US enter a recession in 2026?', keywords: ['recession', 'us', 'economy'] },
+    'evt-gpt5-2026': { question: 'Will GPT-5 be released in 2026?', keywords: ['gpt-5', 'gpt5', 'openai', 'released'] },
+    'evt-dem-2028': { question: 'Will Democrats win the 2028 presidential election?', keywords: ['democrat', '2028', 'presidential', 'election'] },
+    'evt-tsla-500': { question: 'Will Tesla stock reach $500 by end of 2026?', keywords: ['tesla', 'tsla', '500', 'stock'] },
+    'evt-ukraine-ceasefire': { question: 'Will there be a ceasefire in Ukraine by end of 2026?', keywords: ['ukraine', 'ceasefire', 'war'] },
+    'evt-nba-2026': { question: 'NBA 2026 Champion', keywords: ['nba', 'champion', 'finals', '2026'] },
 };
 
 /**
@@ -63,6 +64,10 @@ function detectArbitrage(allMarkets) {
             for (let j = i + 1; j < markets.length; j++) {
                 const a = markets[i];
                 const b = markets[j];
+
+                // Only consider cross-platform arbitrage
+                if (a.source === b.source) continue;
+
                 const diff = Math.abs(a.yesPrice - b.yesPrice);
 
                 if (diff >= THRESHOLD) {

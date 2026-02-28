@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-const SOURCES = ['All', 'Manifold', 'Opinion', 'Predict.fun', 'Probable', 'XO', 'Bento'];
+const SOURCES = ['All', 'Manifold', 'Opinion', 'Predict.fun', 'Probable', 'XO'];
 
 function getSourceClass(source) {
     const map = {
@@ -9,7 +9,6 @@ function getSourceClass(source) {
         'Predict.fun': 'source-predictfun',
         'Probable': 'source-probable',
         'XO': 'source-xo',
-        'Bento': 'source-bento',
     };
     return map[source] || '';
 }

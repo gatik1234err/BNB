@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { fetchManifoldMarkets } = require('../services/manifold');
-const { loadMockMarkets } = require('../services/mockLoader');
+const { fetchPredictFunMarkets } = require('../services/predictfun');
+const { fetchOpinionMarkets } = require('../services/opinion');
+const { fetchProbableMarkets } = require('../services/probable');
+const { fetchXOMarkets } = require('../services/xo');
 const { detectArbitrage } = require('../logic/arbitrage');
 
 // In-memory trade log & P&L
@@ -11,18 +14,15 @@ let totalPnL = 0;
 // GET /api/markets/live
 router.get('/markets/live', async (req, res) => {
     try {
-        const markets = await fetchManifoldMarkets();
+        const [manifold, predictfun, opinion, probable, xo] = await Promise.all([
+            fetchManifoldMarkets(),
+            fetchPredictFunMarkets(),
+            fetchOpinionMarkets(),
+            fetchProbableMarkets(),
+            fetchXOMarkets()
+        ]);
+        const markets = [...manifold, ...predictfun, ...opinion, ...probable, ...xo];
         res.json({ source: 'live', count: markets.length, markets });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// GET /api/markets/mock
-router.get('/markets/mock', (req, res) => {
-    try {
-        const markets = loadMockMarkets();
-        res.json({ source: 'mock', count: markets.length, markets });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -31,11 +31,14 @@ router.get('/markets/mock', (req, res) => {
 // GET /api/markets/all
 router.get('/markets/all', async (req, res) => {
     try {
-        const [live, mock] = await Promise.all([
+        const [manifold, predictfun, opinion, probable, xo] = await Promise.all([
             fetchManifoldMarkets(),
-            Promise.resolve(loadMockMarkets()),
+            fetchPredictFunMarkets(),
+            fetchOpinionMarkets(),
+            fetchProbableMarkets(),
+            fetchXOMarkets(),
         ]);
-        const all = [...live, ...mock];
+        const all = [...manifold, ...predictfun, ...opinion, ...probable, ...xo];
         res.json({ count: all.length, markets: all });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -45,11 +48,14 @@ router.get('/markets/all', async (req, res) => {
 // GET /api/arb
 router.get('/arb', async (req, res) => {
     try {
-        const [live, mock] = await Promise.all([
+        const [manifold, predictfun, opinion, probable, xo] = await Promise.all([
             fetchManifoldMarkets(),
-            Promise.resolve(loadMockMarkets()),
+            fetchPredictFunMarkets(),
+            fetchOpinionMarkets(),
+            fetchProbableMarkets(),
+            fetchXOMarkets(),
         ]);
-        const allMarkets = [...live, ...mock];
+        const allMarkets = [...manifold, ...predictfun, ...opinion, ...probable, ...xo];
         const opportunities = detectArbitrage(allMarkets);
         res.json({
             scannedMarkets: allMarkets.length,

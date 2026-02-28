@@ -10,7 +10,7 @@ export default function About() {
                     <h3>Multi-Platform Aggregation</h3>
                     <p>
                         BNB Terminal pulls live data from Manifold Markets and aggregates it with feeds from
-                        Opinion, Predict.fun, Probable, XO, and Bento — giving you a unified view of prediction
+                        Opinion, Predict.fun, Probable, and XO — giving you a unified view of prediction
                         markets across the entire ecosystem.
                     </p>
                 </div>

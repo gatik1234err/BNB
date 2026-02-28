@@ -1,61 +1,57 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useApi } from './hooks/useApi';
-import Header from './components/Header';
-import MarketsTable from './components/MarketsTable';
-import ArbitragePanel from './components/ArbitragePanel';
+import TerminalHeader from './components/TerminalHeader';
+import AssetBar from './components/AssetBar';
+import LeftPanel from './components/LeftPanel';
+import OrderBookPanel from './components/OrderBookPanel';
+import MarketTradesPanel from './components/MarketTradesPanel';
+import ChartArea from './components/ChartArea';
+import BottomPanel from './components/BottomPanel';
 import Portfolio from './components/Portfolio';
-import About from './components/About';
 
 export default function App() {
+    const [activeTab, setActiveTab] = useState('Trade');
     const [trades, setTrades] = useState([]);
     const [totalPnL, setTotalPnL] = useState(0);
-    const [toast, setToast] = useState(null);
 
-    // Fetch markets and arbitrage data
+    // Fetch live market data and arbitrage opportunities
     const marketsApi = useApi('/api/markets/all', { interval: 30000 });
     const arbApi = useApi('/api/arb', { interval: 30000 });
 
     const loading = marketsApi.loading || arbApi.loading;
 
-    const handleRefresh = useCallback(() => {
-        marketsApi.refetch();
-        arbApi.refetch();
-    }, [marketsApi, arbApi]);
-
     const handleTrade = useCallback((trade) => {
         setTrades(prev => [trade, ...prev]);
         setTotalPnL(trade.totalPnL);
-
-        // Show toast
-        setToast(`Trade executed! P&L: ${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}`);
-        setTimeout(() => setToast(null), 3000);
     }, []);
 
     return (
-        <div className="app">
-            <Header onRefresh={handleRefresh} loading={loading} />
+        <>
+            {activeTab === 'Trade' && (
+                <div className="terminal-layout">
+                    <TerminalHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <AssetBar loading={loading} />
+                    <LeftPanel
+                        opportunities={arbApi.data?.opportunities}
+                        onTrade={handleTrade}
+                    />
+                    <OrderBookPanel markets={marketsApi.data?.markets} />
+                    <MarketTradesPanel markets={marketsApi.data?.markets} />
+                    <ChartArea />
+                    <BottomPanel trades={trades} />
+                </div>
+            )}
 
-            {/* Unified Markets Table */}
-            <MarketsTable
-                markets={marketsApi.data?.markets}
-                loading={marketsApi.loading}
-            />
-
-            {/* Arb + Portfolio Grid */}
-            <div className="main-grid" style={{ marginTop: '24px' }}>
-                <ArbitragePanel
-                    opportunities={arbApi.data?.opportunities}
-                    loading={arbApi.loading}
-                    onTrade={handleTrade}
-                />
-                <Portfolio trades={trades} totalPnL={totalPnL} />
-            </div>
-
-            {/* About Section */}
-            <About />
-
-            {/* Toast notification */}
-            {toast && <div className="toast">{toast}</div>}
-        </div>
+            {activeTab === 'Portfolio' && (
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--bg-main)' }}>
+                    <div style={{ height: '56px', minHeight: '56px', borderBottom: '1px solid var(--border-color)' }}>
+                        <TerminalHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+                    </div>
+                    <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+                        <Portfolio trades={trades} totalPnL={totalPnL} />
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

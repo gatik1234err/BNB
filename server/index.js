@@ -14,6 +14,6 @@ app.use('/api', marketsRouter);
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 BNB Trading Terminal API running on http://localhost:${PORT}`);
 });
